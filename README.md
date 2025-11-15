@@ -1,19 +1,21 @@
 # IfcFileLoader
-Load IFC file, traverse geometry &amp; meta data, with super high performance &amp; super low memory footprint
+
+This is a sample project to demonstrate how to use [https://github.com/ThatOpen/engine_web-ifc](web-ifc) in a native (non WASM) C++ project.
+
+It demonstrates how to load an IFC file, traverse geometry &amp; meta data, with super high performance &amp; super low memory footprint
+
+Check out a full IFC 3D viewer with the same technology under the hood: https://github.com/ifcquery/ifcsplitandmerge
 
 
+This repository contains project files for VS, to compile the application on Windows.
 
-### IfcSplitAndMerge source code repository
+Compiling on Linux/Mac OS is also possible, but currently not part of the repository.
 
-In this repository, VS project files are provided to compile the application on Windows.
-
-Compiling on Linux/Mac OS is theoretically possible, but currently not part of the repository.
-
-All external dependencies except from Qt and OpenSceneGraph are in src/external, and already referenced in the VS project. No need to build those as separate libraries.
+All external dependencies are in src/external, and already referenced in the VS project. No need to build those as separate libraries.
 
 Please note that in a binary distribution, the licenses of those external libraries have to be delivered along with the binaries.
 
-The IfcSplitAndMerge binary download package contains a folder "third_party", wich contains the licenses and also the source code of external libraries like web-ifc.
+The IfcFileLoader binary download package contains a folder "third_party", wich contains the licenses and also the source code of external libraries like web-ifc.
 
 
 ### How to open an IFC file and read entity attributes with web-ifc
@@ -31,8 +33,7 @@ Loading times are much faster.
 
 With the entity ID as offset, the loader jumps to any entity. With an offset [0, n] (n=number of arguments), the argument content can be read.
 
-In IfcSplitAndMerge, the file reading entry point is in 
-src/cmd/LoadModelCommand.cpp, method LoadModelCommand::LoadIfcFile.
+
 
 Here is a basic example how to open an IFC file and read directly from the tape (token stream), without using LoadModelCommand, plain web-ifc, to show how it works:
 
@@ -148,5 +149,6 @@ Here is a basic example how to open an IFC file and read directly from the tape 
 		}
 ```
 
+<img width="2383" height="2054" alt="image" src="https://github.com/user-attachments/assets/c8d2cc78-e9af-448d-86be-5f9933ba79a2" />
 
--- add screenshot of VS and console printout
+
