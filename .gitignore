@@ -1,2 +1,6 @@
 /.vs
 /bin
+/src/external/cdt-src/CDT/tests
+/src/external/cdt-src/docs
+/src/external/cdt-src/visualizer
+/src/external/glm-src/doc
