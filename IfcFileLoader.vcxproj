@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{c7b44112-f170-4c60-8bd0-7aaaf19f47f6}</ProjectGuid>
+    <RootNamespace>IfcFileLoader</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>bin\$(Configuration)\</OutDir>
+    <IntDir>bin\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)d</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;GLM_ENABLE_EXPERIMENTAL;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>.\src;.\src\external;.\src\external\nlohmann;.\src\external\tiny_gltf;.\src\external\cdt-src;.\src\external\spdlog-src\include;.src\external\engine_web-ifc\src\cpp;.\src\external\engine_web-ifc\src\cpp\;.\src\external\fastfloat-src\include;.\src\external\glm-src\;.\src\external\stduuid-src\include;.\src\external\earcut-src\include\;.\src\external\tinynurbs-src\include;.\src\external\cdt-src\;.\src\external\cdt-src\CDT\include;.\src\external\earcut-src\include</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4244;4267;4005;4018</DisableSpecificWarnings>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;GLM_ENABLE_EXPERIMENTAL;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>.\src;.\src\external;.\src\external\nlohmann;.\src\external\tiny_gltf;.\src\external\cdt-src;.\src\external\spdlog-src\include;.src\external\engine_web-ifc\src\cpp;.\src\external\engine_web-ifc\src\cpp\;.\src\external\fastfloat-src\include;.\src\external\glm-src\;.\src\external\stduuid-src\include;.\src\external\earcut-src\include\;.\src\external\tinynurbs-src\include;.\src\external\cdt-src\;.\src\external\cdt-src\CDT\include;.\src\external\earcut-src\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\external\test\io_helpers.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\IfcGeometryLoader.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\IfcGeometryProcessor.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\nurbs.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\aabb.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\alignment.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\arc.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\boolean.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\buffers.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\circularSweep.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\clothoid.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\curve.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\cylindricalRevolution.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\extrusion.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\face.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\geometry.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\parabola.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\plane.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\profile.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\revolution.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\operations\bim-geometry\sweep.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\representation\IfcCurve.cpp" />
+    <ClCompile Include="src\external\web-ifc\geometry\representation\IfcGeometry.cpp" />
+    <ClCompile Include="src\external\web-ifc\parsing\IfcFileStream.cpp" />
+    <ClCompile Include="src\external\web-ifc\parsing\IfcLoader.cpp" />
+    <ClCompile Include="src\external\web-ifc\parsing\IfcTokenChunk.cpp" />
+    <ClCompile Include="src\external\web-ifc\parsing\IfcTokenStream.cpp" />
+    <ClCompile Include="src\external\web-ifc\parsing\string_parsing.cpp" />
+    <ClCompile Include="src\external\web-ifc\parsing\uuid_utils.cpp" />
+    <ClCompile Include="src\external\web-ifc\schema\IfcSchemaManager.cpp" />
+    <ClCompile Include="src\external\web-ifc\schema\schema-functions.cpp" />
+    <ClInclude Include="src\classIDhasType.h" />
+    <ClInclude Include="src\external\test\dumpToThree.h" />
+    <ClInclude Include="src\external\test\io_helpers.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\bim-geometry\boolean.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\bim-geometry\booleanUtils.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\bim-geometry\circularSweep.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\bim-geometry\plane.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\bim-geometry\profile.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\boolean-utils\aabb.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\boolean-utils\bvh.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\boolean-utils\clip-mesh.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\boolean-utils\eps.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\boolean-utils\fuzzy-bools.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\boolean-utils\geometry.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\boolean-utils\intersect-ray-tri.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\boolean-utils\is-inside-boundary.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\boolean-utils\is-inside-mesh.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\boolean-utils\loop-finder.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\boolean-utils\math.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\boolean-utils\obj-exporter.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\boolean-utils\shared-position.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\boolean-utils\svg.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\boolean-utils\util.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\curve-utils.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\geometryutils.h" />
+    <ClInclude Include="src\external\web-ifc\geometry\operations\mesh_utils.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

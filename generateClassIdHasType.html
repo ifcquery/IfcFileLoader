@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IFC EXPRESS Schema to C++ Code Generator</title>
+</head>
+<body>
+    <h1>Generate classIDhasType() function for web-ifc</h1>
+    <p>classIDhasType() lets you easily check if a type code like webifc::schema::IfcElement has a certain type, for example webifc::schema::IfcObjectDefinition</p>
+    <p>Enter the URL to the raw IFC EXPRESS schema file (e.g., for IFC4):</p>
+    <input type="text" id="schemaUrl" value="https://raw.githubusercontent.com/stepcode/stepcode/master/data/ifc4/IFC4.exp" size="80">
+    <button onclick="generateCode()">Generate Code</button>
+    <p>Generated C++ Code:</p>
+    <textarea id="output" rows="30" cols="100"></textarea>
+
+    <script>
+        async function generateCode() {
+            const url = document.getElementById('schemaUrl').value;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch schema');
+                let text = await response.text();
+
+                // Remove multi-line comments (/* */)
+                text = text.replace(/\/\*[\s\S]*?\*\//g, '');
+                // Remove single-line comments (--)
+                text = text.replace(/--.*?\n/g, '\n');
+
+                const entities = {};
+                let currentEntity = null;
+                let headerLines = [];
+                let inEntity = false;
+                let inAttributes = false;
+
+                const lines = text.split('\n');
+                for (let originalLine of lines) {
+                    let line = originalLine.trim();
+                    if (line === '' || line.startsWith('--')) continue;
+
+                    if (!inEntity) {
+                        if (line.match(/^(ABSTRACT\s+)?(SUPERTYPE\s+OF\s*\(.*\)\s+)?ENTITY\b/i)) {
+                            inEntity = true;
+                            headerLines = [line];
+                            // Extract name
+                            let namePart = line.replace(/^(ABSTRACT\s+)?(SUPERTYPE\s+OF\s*\([^\)]+\)\s+)?ENTITY\s+/i, '').trim();
+                            namePart = namePart.split(/\s/)[0].replace(/;?$/, '');
+                            currentEntity = namePart;
+                            entities[currentEntity] = { supers: [] };
+                            inAttributes = false;
+                        }
+                    } else {
+                        if (line.match(/^END_ENTITY/i)) {
+                            // Process header for SUBTYPE
+                            let fullHeader = headerLines.join(' ');
+                            let superMatch = fullHeader.match(/SUBTYPE\s+OF\s*\(([^\)]+)\)/i);
+                            if (superMatch) {
+                                let superStr = superMatch[1].trim();
+                                const supers = superStr.split(',').map(s => s.trim()).filter(s => s);
+                                entities[currentEntity].supers = supers;
+                            }
+                            currentEntity = null;
+                            headerLines = [];
+                            inEntity = false;
+                            inAttributes = false;
+                        } else if (inAttributes || line.match(/WHERE/i) || line.match(/UNIQUE/i) || line.match(/DERIVE/i) || line.match(/INVERSE/i)) {
+                            inAttributes = true;
+                            // Skip attributes and constraints
+                        } else {
+                            // Continuation of header
+                            headerLines.push(line);
+                        }
+                    }
+                }
+
+                // Build all transitive supertypes for each entity
+                const allSupers = {};
+                function getAllSupers(name, visited = new Set()) {
+                    if (allSupers[name]) return allSupers[name];
+                    if (visited.has(name)) return []; // Cycle prevention
+                    visited.add(name);
+                    let sups = [];
+                    const entity = entities[name];
+                    if (entity && entity.supers.length > 0) {
+                        for (let direct of entity.supers) {
+                            sups.push(direct);
+                            sups = sups.concat(getAllSupers(direct, visited));
+                        }
+                    }
+                    allSupers[name] = sups;
+                    return sups;
+                }
+
+                // Compute for all
+                const entityNames = Object.keys(entities).sort();
+                for (let name of entityNames) {
+                    getAllSupers(name);
+                }
+
+                // Generate C++ code
+                let code = '#pragma once\n';
+                code += '#include <web-ifc/schema/IfcSchemaManager.h>\n';
+                code += '// generated with www.ifcquery.com/generateClassIdHasType.html\n';
+                code += 'using namespace webifc::schema;\n';
+                code += 'constexpr bool classIDhasType(uint32_t classID, uint32_t check)\n';
+                code += '{\n';
+                code += '    if (classID == check) { return true; }\n';
+                code += '    switch (classID)\n';
+                code += '    {\n';
+
+                for (let name of entityNames) {
+                    const supers = allSupers[name] || [];
+                    const uniqueSupers = [...new Set(supers)];
+                    const constName = name.toUpperCase();
+                    code += `        case ${constName}: return `;
+                    if (uniqueSupers.length === 0) {
+                        code += 'false;\n';
+                    } else {
+                        code += uniqueSupers.map(s => `check == ${s.toUpperCase()}`).join(' || ') + ';\n';
+                    }
+                }
+
+                code += '    }\n';
+                code += '    return false;\n';
+                code += '}\n';
+
+                document.getElementById('output').value = code;
+            } catch (error) {
+                document.getElementById('output').value = 'Error: ' + error.message;
+            }
+        }
+
+        async function generateCode2() {
+            const url = document.getElementById('schemaUrl').value;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch schema');
+                let text = await response.text();
+
+                // Remove comments (--) and multi-line comments (/* */)
+                text = text.replace(/\/\*[\s\S]*?\*\//g, '');
+                text = text.replace(/--.*?\n/g, '\n');
+
+                // Split by ';' to tokenize
+                const tokens = text.split(';').map(t => t.trim()).filter(t => t.length > 0);
+
+                const entities = {};
+                let currentEntity = null;
+
+                for (let token of tokens) {
+                    if (token.startsWith('ENTITY ')) {
+                        // Extract entity name: after 'ENTITY ' until whitespace or end
+                        const nameMatch = token.match(/^ENTITY\s+([a-zA-Z0-9_]+)/);
+                        if (nameMatch) {
+                            const name = nameMatch[1];
+                            currentEntity = name;
+                            entities[name] = { supers: [] };
+                        }
+                    } else if (currentEntity && token.startsWith('SUBTYPE OF (') && token.endsWith(')')) {
+                        // Extract supertypes: between 'SUBTYPE OF (' and ')'
+                        let superStr = token.substring(12, token.length - 1).trim();
+                        // Remove any nested parens if present, but IFC is usually simple
+                        superStr = superStr.replace(/[\(\)]/g, '').trim();
+                        const supers = superStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+                        entities[currentEntity].supers = supers;
+                    } else if (token === 'END_ENTITY') {
+                        currentEntity = null;
+                    }
+                }
+
+                // Build all transitive supertypes for each entity
+                const allSupers = {};
+                function getAllSupers(name, visited = new Set()) {
+                    if (allSupers[name]) return allSupers[name];
+                    if (visited.has(name)) return []; // Cycle prevention, though unlikely in IFC
+
+                    visited.add(name);
+                    let sups = [];
+                    const entity = entities[name];
+                    if (entity && entity.supers.length > 0) {
+                        for (let direct of entity.supers) {
+                            sups.push(direct);
+                            sups = sups.concat(getAllSupers(direct, visited));
+                        }
+                    }
+                    allSupers[name] = sups;
+                    return sups;
+                }
+
+                // Compute for all
+                const entityNames = Object.keys(entities).sort();
+                for (let name of entityNames) {
+                    getAllSupers(name);
+                }
+
+                // Generate C++ code
+                let code = '#pragma once\n';
+                code += '#include <web-ifc/schema/IfcSchemaManager.h>\n';
+                code += '// generated with www.ifcquery.com/generateClassIdHasType.html\n';
+                code += 'using namespace webifc::schema;\n';
+                code += 'constexpr bool classIDhasType(uint32_t classID, uint32_t check)\n';
+                code += '{\n';
+                code += '    if (classID == check) { return true; }\n';
+                code += '    switch (classID)\n';
+                code += '    {\n';
+
+                for (let name of entityNames) {
+                    const supers = allSupers[name] || [];
+                    // Remove duplicates if any from multiple inheritance
+                    const uniqueSupers = [...new Set(supers)];
+                    const constName = 'IFC' + name.toUpperCase();
+                    code += `        case ${constName}: return `;
+                    if (uniqueSupers.length === 0) {
+                        code += 'false;\n';
+                    } else {
+                        code += uniqueSupers.map(s => `check == IFC${s.toUpperCase()}`).join(' || ') + ';\n';
+                    }
+                }
+
+                code += '    }\n';
+                code += '    return false;\n';
+                code += '}\n';
+
+                document.getElementById('output').value = code;
+            } catch (error) {
+                document.getElementById('output').value = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
