@@ -11,7 +11,7 @@ Compiling on Linux/Mac OS is also possible, but currently not part of the reposi
 All external dependencies are in src/external, and already referenced in the VS project. No need to build those as separate libraries.
 
 
-Check out a full IFC 3D viewer with the same technology under the hood: https://github.com/ifcquery/ifcsplitandmerge
+Check out a full IFC 3D viewer using the same technology: https://github.com/ifcquery/ifcsplitandmerge
 <img width="600" alt="IfcSplitAndMerge: https://github.com/ifcquery/ifcsplitandmerge" src="https://github.com/user-attachments/assets/d6e976f9-c01c-4dd4-b15c-4aa9bda08810" />
 
 
