@@ -4,18 +4,16 @@ This is a sample project to demonstrate how to use [https://github.com/ThatOpen/
 
 It demonstrates how to load an IFC file, traverse geometry &amp; meta data, with super high performance &amp; super low memory footprint
 
-Check out a full IFC 3D viewer with the same technology under the hood: https://github.com/ifcquery/ifcsplitandmerge
-
-
 This repository contains project files for VS, to compile the application on Windows.
 
 Compiling on Linux/Mac OS is also possible, but currently not part of the repository.
 
 All external dependencies are in src/external, and already referenced in the VS project. No need to build those as separate libraries.
 
-Please note that in a binary distribution, the licenses of those external libraries have to be delivered along with the binaries.
 
-The IfcFileLoader binary download package contains a folder "third_party", wich contains the licenses and also the source code of external libraries like web-ifc.
+Check out a full IFC 3D viewer with the same technology under the hood: https://github.com/ifcquery/ifcsplitandmerge
+<img width="600" alt="IfcSplitAndMerge: https://github.com/ifcquery/ifcsplitandmerge" src="https://github.com/user-attachments/assets/d6e976f9-c01c-4dd4-b15c-4aa9bda08810" />
+
 
 
 ### How to open an IFC file and read entity attributes with web-ifc
