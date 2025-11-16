@@ -19,7 +19,7 @@ Check out a full IFC 3D viewer with the same technology under the hood: https://
 ### How to open an IFC file and read entity attributes with web-ifc
 
 Web-ifc has a so called tape reader as internal data structure, i.e. not an object oriented model.
-Web-ifc parses the STEP file content by loading the file content as text memory chunks, then replacing the entity IDs with a uint32_t, the data type string with a CRC type code (uint32_t), and then the arguments according to their type.
+Web-ifc parses the STEP file content by loading the file content in chunks, then replacing the entity IDs with a uint32_t, the data type string with a CRC type code (uint32_t), and then the arguments according to their type.
 
 <img width="1608" height="271" alt="image" src="https://github.com/user-attachments/assets/18c9afaa-8343-45c5-8fea-b6a0cdfc488e" />
 
@@ -31,118 +31,117 @@ With the entity ID as offset, the loader jumps to any entity. With an offset [0,
 
 
 
-Here is a basic example how to open an IFC file and read directly from the tape (token stream), without using LoadModelCommand, plain web-ifc, to show how it works:
+Here is a basic example how to open an IFC file and read directly from the tape (token stream):
 
 ```cpp
-		struct LoaderSettings {
-			bool COORDINATE_TO_ORIGIN = false;
-			uint16_t CIRCLE_SEGMENTS = 12;
-			uint32_t TAPE_SIZE = 67108864; // 64 MByte, probably no need for anyone other than web-ifc devs to change this
-			uint32_t MEMORY_LIMIT = UINT64_MAX * 0.5;
-			uint16_t LINEWRITER_BUFFER = 10000;
-		};
+struct LoaderSettings {
+	bool COORDINATE_TO_ORIGIN = false;
+	uint16_t CIRCLE_SEGMENTS = 12;
+	uint32_t TAPE_SIZE = 67108864; // 64 MByte, probably no need for anyone other than web-ifc devs to change this
+	uint32_t MEMORY_LIMIT = UINT64_MAX * 0.5;
+	uint16_t LINEWRITER_BUFFER = 10000;
+};
 
-		QString fileName = "IfcOpenHouse.ifc";
-		
-		webifc::schema::IfcSchemaManager schemaManager;
+webifc::schema::IfcSchemaManager schemaManager;
+LoaderSettings fileLoadingSettings;
+webifc::parsing::IfcLoader loader (fileLoadingSettings.TAPE_SIZE, fileLoadingSettings.MEMORY_LIMIT, fileLoadingSettings.LINEWRITER_BUFFER, schemaManager);
 
-		LoaderSettings fileLoadingSettings;
-		webifc::parsing::IfcLoader loader (fileLoadingSettings.TAPE_SIZE, fileLoadingSettings.MEMORY_LIMIT, fileLoadingSettings.LINEWRITER_BUFFER, schemaManager);
-		
-		QFile file(fileName);
-		if (!file.open(QIODevice::ReadOnly)) {
-			std::cout << "Could not open file: " + fileName.toStdString();
-			return 0;
-		}
 
-		size_t mFileSize = file.size();
+std::string fileName = "IfcOpenHouse_IFC4.ifc";
+std::filesystem::path pathToFile = std::filesystem::absolute(fileName);
+if (!std::filesystem::exists(pathToFile)) {
+	std::cout << "File does not exist: " + pathToFile.string();
+	return 0;
+}
 
-		loader.LoadFile([&](char* dest, size_t sourceOffset, size_t destSize) {
-			// this lambda is called for each chunk, so the content can be read from any source, stream etc.
-			size_t length = std::min(static_cast<size_t>(mFileSize - sourceOffset), destSize);
-			if (file.seek(sourceOffset)) {
-				qint64 bytesRead = file.read(dest, length);
-				if (bytesRead != static_cast<qint64>(length)) {
-					throw std::runtime_error("Error reading file.");
-				}
-				return static_cast<size_t>(bytesRead);
-			}
-			return size_t(0);
-		});
+size_t fileSize = std::filesystem::file_size(pathToFile);
 
-		std::vector<uint32_t> IfcProjectEntities = loader.GetExpressIDsWithType(webifc::schema::IFCPROJECT);
-		if (IfcProjectEntities.size() == 0) {
-			std::cout << "No IfcProject entity found in the file.";
-			return -1;
-		}
-		// IfcProject ----------------------------------------------------------------------------
-		//		IfcGloballyUniqueId							GlobalId;
-		//		IfcOwnerHistory								OwnerHistory;				//optional
-		//		IfcLabel									Name;						//optional
-		//		IfcText										Description;				//optional
-		//		IfcLabel									ObjectType;					//optional
-		//		IfcLabel									LongName;					//optional
-		//		IfcLabel									Phase;						//optional
-		//		std::vector<IfcRepresentationContext> 		RepresentationContexts;		//optional
-		//		IfcUnitAssignment							UnitsInContext;				//optional
 
-		uint32_t ifcProjectID = IfcProjectEntities[0];
-		std::string projectGUID = "";
-		std::string projectName = "DefaultProject";
+loader.LoadFile([&](char* dest, size_t sourceOffset, size_t destSize) {
+	// this lambda is called for each chunk, so the content can be read from any source, stream etc.
+	size_t length = std::min(static_cast<size_t>(fileSize - sourceOffset), destSize);
+	std::ifstream file(pathToFile, std::ios::binary);
+	if (file) {
+		file.seekg(sourceOffset);
+		file.read(dest, length);
+		return static_cast<size_t>(file.gcount());
+	}
+	return size_t(0);
+	});
 
-		// #12=IFCPROJECT('2Xw1_iVsn7OudAGdIJr3pp',#5,'IfcOpenHouse',$,$,$,$,(#41,#47),#11);
-		loader.MoveToArgumentOffset(ifcProjectID, 0); // GlobalId is argument 0
-		auto tokenTypeGUID = loader.GetTokenType();
-		loader.StepBack();
-		if (tokenTypeGUID == webifc::parsing::STRING) {
-			projectGUID = loader.GetStringArgument();   // read string "2Xw1_iVsn7OudAGdIJr3pp"
-		}
+std::vector<uint32_t> IfcProjectEntities = loader.GetExpressIDsWithType(webifc::schema::IFCPROJECT);
+if (IfcProjectEntities.size() == 0) {
+	std::cout << "No IfcProject entity found in the file.";
+	return -1;
+}
+// IfcProject ----------------------------------------------------------------------------
+//		IfcGloballyUniqueId							GlobalId;
+//		IfcOwnerHistory								OwnerHistory;				//optional
+//		IfcLabel									Name;						//optional
+//		IfcText										Description;				//optional
+//		IfcLabel									ObjectType;					//optional
+//		IfcLabel									LongName;					//optional
+//		IfcLabel									Phase;						//optional
+//		std::vector<IfcRepresentationContext> 		RepresentationContexts;		//optional
+//		IfcUnitAssignment							UnitsInContext;				//optional
 
-		loader.MoveToArgumentOffset(ifcProjectID, 2); // Name is argument 2
-		auto tokenTypeName = loader.GetTokenType();
-		loader.StepBack();
-		if (tokenTypeName == webifc::parsing::STRING) {
-			projectName = loader.GetStringArgument();  // read string "IfcOpenHouse"
-		}
-		
-		// load project hierarchy: child-parent relations
-		std::unordered_map<uint32_t, std::unordered_map<uint32_t, uint32_t> > mapElement2Children;    // [parentID] = { childID, relationID };
-		std::unordered_map<uint32_t, std::pair<uint32_t, uint32_t> > mapElement2ParentRelationObject;  // [elementEntityID] = { parentID, relationID };
+uint32_t ifcProjectID = IfcProjectEntities[0];
+std::string projectGUID = "";
+std::string projectName = "DefaultProject";
 
-		std::vector<uint32_t> relAggregates = loader.GetExpressIDsWithType(webifc::schema::IFCRELAGGREGATES);
-		// IfcRelAggregates -----------------------------------------------------------
-		//		IfcGloballyUniqueId					GlobalId;
-		//		IfcOwnerHistory						OwnerHistory;				//optional
-		//		IfcLabel							Name;						//optional
-		//		IfcText								Description;				//optional
-		//		IfcObjectDefinition					RelatingObject;				4
-		//		std::vector<IfcObjectDefinition>	RelatedObjects;				5
-		for (auto relationID : relAggregates) {
-			uint32_t parentAttributeNumber = 4;
-			loader.MoveToArgumentOffset(relationID, parentAttributeNumber);
-			auto tokenTypeParentEntity = loader.GetTokenType();
-			loader.StepBack();
-			if (tokenTypeParentEntity != webifc::parsing::REF) {
-				// The argument is non-optional, but sometimes it is missing in IFC files anyway. Can be ignored safely
-				continue;
-			}
-			uint32_t parentTag = loader.GetRefArgument();
-			uint32_t setOfChildrenAttributeNumber = 5; // IfcRelContainedInSpatialStructure: 4
-			loader.MoveToArgumentOffset(relationID, setOfChildrenAttributeNumber);
-			auto tokenTypeChildren = loader.GetTokenType();
-			loader.StepBack();
-			if (tokenTypeChildren != webifc::parsing::SET_BEGIN) {
-				// could be SET_END in case of an empty set
-				continue;
-			}
-			const std::vector<uint32_t> RelatedElementsTapeOffsets = loader.GetSetArgument();
-			for (const uint32_t& tapeOffset : RelatedElementsTapeOffsets) {
-				uint32_t elementExpressID = loader.GetRefArgument(tapeOffset);
-				uint32_t elementType = loader.GetLineType(elementExpressID);
-				mapElement2ParentRelationObject[elementExpressID] = { parentTag, relationID };
-				mapElement2Children[parentTag].emplace(elementExpressID, relationID);
-			}
-		}
+// #12=IFCPROJECT('2Xw1_iVsn7OudAGdIJr3pp',#5,'IfcOpenHouse',$,$,$,$,(#41,#47),#11);
+loader.MoveToArgumentOffset(ifcProjectID, 0); // GlobalId is argument 0
+auto tokenTypeGUID = loader.GetTokenType();
+loader.StepBack();
+if (tokenTypeGUID == webifc::parsing::STRING) {
+	projectGUID = loader.GetStringArgument();   // read string "2Xw1_iVsn7OudAGdIJr3pp"
+}
+
+loader.MoveToArgumentOffset(ifcProjectID, 2); // Name is argument 2
+auto tokenTypeName = loader.GetTokenType();
+loader.StepBack();
+if (tokenTypeName == webifc::parsing::STRING) {
+	projectName = loader.GetStringArgument();  // read string "IfcOpenHouse"
+}
+
+// load project hierarchy: child-parent relations
+std::unordered_map<uint32_t, std::unordered_map<uint32_t, uint32_t> > mapElement2Children;    // [parentID] = { childID, relationID };
+std::unordered_map<uint32_t, std::pair<uint32_t, uint32_t> > mapElement2ParentRelationObject;  // [elementEntityID] = { parentID, relationID };
+
+std::vector<uint32_t> relAggregates = loader.GetExpressIDsWithType(webifc::schema::IFCRELAGGREGATES);
+// IfcRelAggregates -----------------------------------------------------------
+//		IfcGloballyUniqueId					GlobalId;
+//		IfcOwnerHistory						OwnerHistory;				//optional
+//		IfcLabel							Name;						//optional
+//		IfcText								Description;				//optional
+//		IfcObjectDefinition					RelatingObject;				4
+//		std::vector<IfcObjectDefinition>	RelatedObjects;				5
+for (auto relationID : relAggregates) {
+	uint32_t parentAttributeNumber = 4;
+	loader.MoveToArgumentOffset(relationID, parentAttributeNumber);
+	auto tokenTypeParentEntity = loader.GetTokenType();
+	loader.StepBack();
+	if (tokenTypeParentEntity != webifc::parsing::REF) {
+		// The argument is non-optional, but sometimes it is missing in IFC files anyway. Can be ignored safely
+		continue;
+	}
+	uint32_t parentTag = loader.GetRefArgument();
+	uint32_t setOfChildrenAttributeNumber = 5; // IfcRelContainedInSpatialStructure: 4
+	loader.MoveToArgumentOffset(relationID, setOfChildrenAttributeNumber);
+	auto tokenTypeChildren = loader.GetTokenType();
+	loader.StepBack();
+	if (tokenTypeChildren != webifc::parsing::SET_BEGIN) {
+		// could be SET_END in case of an empty set
+		continue;
+	}
+	const std::vector<uint32_t> RelatedElementsTapeOffsets = loader.GetSetArgument();
+	for (const uint32_t& tapeOffset : RelatedElementsTapeOffsets) {
+		uint32_t elementExpressID = loader.GetRefArgument(tapeOffset);
+		uint32_t elementType = loader.GetLineType(elementExpressID);
+		mapElement2ParentRelationObject[elementExpressID] = { parentTag, relationID };
+		mapElement2Children[parentTag].emplace(elementExpressID, relationID);
+	}
+}
 ```
 
 
