@@ -1,6 +1,6 @@
 # IfcFileLoader
 
-This is a sample project to demonstrate how to use [https://github.com/ThatOpen/engine_web-ifc](web-ifc) in a native (non WASM) C++ project.
+This is a sample project to demonstrate how to use https://github.com/ThatOpen/engine_web-ifc in a native (non WASM) C++ project.
 
 It demonstrates how to load an IFC file, traverse geometry &amp; meta data, with super high performance &amp; super low memory footprint
 
@@ -152,6 +152,6 @@ Download, open the sln file, compile & run:
 
 Support and implementation services for web-ifc in desktop applications, as well as 3D graphics and Qt UI are available on www.IfcSplitAndMerge.com
 
-There is also the existing web based application ecosystem and community for web-ifc: [https://github.com/ThatOpen/engine_web-ifc](web-ifc)
+There is also the existing web based application ecosystem and community for web-ifc: https://github.com/ThatOpen/engine_web-ifc
 
 
