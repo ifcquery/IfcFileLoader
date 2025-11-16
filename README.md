@@ -25,9 +25,7 @@ Web-ifc parses the STEP file content by loading the file content as text memory 
 
 So the text file content turns into a mix of binary 1-byte tokens, binary values like uint32_t for IDs, double values for floating point numbers, text remains text.
 
-This approach results in a much smaller memory footprint compared to an object oriented model, where every reference has 64 bits, plus additional overhead for smart pointers.
-
-Loading times are much faster.
+This approach results in a much smaller memory footprint compared to an object oriented model, and loading is much faster.
 
 With the entity ID as offset, the loader jumps to any entity. With an offset [0, n] (n=number of arguments), the argument content can be read.
 
@@ -147,6 +145,13 @@ Here is a basic example how to open an IFC file and read directly from the tape 
 		}
 ```
 
+
+Download, open the sln file, compile & run:
+
 <img width="2383" height="2054" alt="image" src="https://github.com/user-attachments/assets/c8d2cc78-e9af-448d-86be-5f9933ba79a2" />
+
+Support and implementation services for web-ifc in desktop applications, as well as 3D graphics and Qt UI are available on www.IfcSplitAndMerge.com
+
+There is also the existing web based application ecosystem and community for web-ifc: [https://github.com/ThatOpen/engine_web-ifc](web-ifc)
 
 
